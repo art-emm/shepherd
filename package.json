@@ -1,5 +1,5 @@
 {
-  "name": "shepherd.js",
+  "name": "hw-shepherd",
   "version": "6.0.2",
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
     "Chuck Carpenter <chuck@shipshape.io>"
   ],
   "scripts": {
+    "postinstall": "npm run build",
     "build": "yarn clean && rollup -c",
     "build:landing": "npx tailwind build ./landing/css/styles.css -o ./landing/css/welcome.css",
     "docs": "node_modules/.bin/jsdoc -c .jsdoc.js --verbose",
