@@ -21,7 +21,7 @@
     "Chuck Carpenter <chuck@shipshape.io>"
   ],
   "scripts": {
-    "postinstall": "yarn build",
+    "postinstall": "npm i && npm run build",
     "build": "yarn clean && rollup -c",
     "build:landing": "npx tailwind build ./landing/css/styles.css -o ./landing/css/welcome.css",
     "docs": "node_modules/.bin/jsdoc -c .jsdoc.js --verbose",
