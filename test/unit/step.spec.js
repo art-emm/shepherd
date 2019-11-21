@@ -224,90 +224,102 @@ describe('Tour | Step', () => {
       step.destroy();
     });
 
-    it('should update passed in properties', (done) => {
-      step.updateStepOptions({ text: 'updated', title: 'New title' });
+    it('should update passed in properties', () => {
+      return new Promise((done) => {
+        step.updateStepOptions({ text: 'updated', title: 'New title' });
 
-      expect(step.options.text).toBe('updated');
-      expect(step.options.title).toBe('New title');
+        expect(step.options.text).toBe('updated');
+        expect(step.options.title).toBe('New title');
 
-      requestAnimationFrame(() => {
-        expect(document.querySelector('.shepherd-text').textContent).toBe('updated');
-        expect(document.querySelector('.shepherd-title').textContent).toBe('New title');
-        done();
+        requestAnimationFrame(() => {
+          expect(document.querySelector('.shepherd-text').textContent).toBe('updated');
+          expect(document.querySelector('.shepherd-title').textContent).toBe('New title');
+          done();
+        });
       });
     });
 
-    it('should not affect other properties', (done) => {
-      step.updateStepOptions({ text: 'updated', title: 'New title' });
-      expect(step.options.id).toEqual('test-id');
-      expect(step.options.buttons).toEqual([
-        { text: 'button one', disabled: false, classes: 'button1' },
-        { text: 'button two', disabled: true, classes: 'button2' }
-      ]);
+    it('should not affect other properties', () => {
+      return new Promise((done) => {
+        step.updateStepOptions({ text: 'updated', title: 'New title' });
+        expect(step.options.id).toEqual('test-id');
+        expect(step.options.buttons).toEqual([
+          { text: 'button one', disabled: false, classes: 'button1' },
+          { text: 'button two', disabled: true, classes: 'button2' }
+        ]);
 
-      requestAnimationFrame(() => {
-        expect(document.querySelector('.button1').textContent).toBe('button one');
-        expect(document.querySelector('.button2').textContent).toBe('button two');
-        done();
+        requestAnimationFrame(() => {
+          expect(document.querySelector('.button1').textContent).toBe('button one');
+          expect(document.querySelector('.button2').textContent).toBe('button two');
+          done();
+        });
       });
     });
 
-    it('should update buttons', (done) => {
-      const buttons = [
-        { text: 'button one updated', disabled: true, classes: 'button1' },
-        { text: 'button two updated', disabled: false, classes: 'button2' }
-      ];
+    it('should update buttons', () => {
+      return new Promise((done) => {
+        const buttons = [
+          { text: 'button one updated', disabled: true, classes: 'button1' },
+          { text: 'button two updated', disabled: false, classes: 'button2' }
+        ];
 
-      step.updateStepOptions({ buttons });
-      expect(step.options.buttons).toEqual(buttons);
+        step.updateStepOptions({ buttons });
+        expect(step.options.buttons).toEqual(buttons);
 
-      requestAnimationFrame(() => {
-        const buttonOne = document.querySelector('.button1');
-        expect(buttonOne.textContent).toBe('button one updated');
-        expect(buttonOne.disabled).toBe(true);
+        requestAnimationFrame(() => {
+          const buttonOne = document.querySelector('.button1');
+          expect(buttonOne.textContent).toBe('button one updated');
+          expect(buttonOne.disabled).toBe(true);
 
-        const buttonTwo = document.querySelector('.button2');
-        expect(buttonTwo.textContent).toBe('button two updated');
-        expect(buttonTwo.disabled).toBe(false);
-        done();
+          const buttonTwo = document.querySelector('.button2');
+          expect(buttonTwo.textContent).toBe('button two updated');
+          expect(buttonTwo.disabled).toBe(false);
+          done();
+        });
       });
     });
 
-    it('removing title should remove class', (done) => {
-      step.updateStepOptions({ title: '' });
-      expect(step.options.title).toEqual('');
+    it('removing title should remove class', () => {
+      return new Promise((done) => {
+        step.updateStepOptions({ title: '' });
+        expect(step.options.title).toEqual('');
 
-      requestAnimationFrame(() => {
-        const element = document.querySelector('.shepherd-element');
-        expect(element.classList.contains('shepherd-has-title')).toBeFalsy();
-        done();
+        requestAnimationFrame(() => {
+          const element = document.querySelector('.shepherd-element');
+          expect(element.classList.contains('shepherd-has-title')).toBeFalsy();
+          done();
+        });
       });
     });
 
-    it('updating classes should update element classes', (done) => {
-      step.updateStepOptions({ classes: 'test-1 test-2' });
-      expect(step.options.classes).toEqual('test-1 test-2');
+    it('updating classes should update element classes', () => {
+      return new Promise((done) => {
+        step.updateStepOptions({ classes: 'test-1 test-2' });
+        expect(step.options.classes).toEqual('test-1 test-2');
 
-      requestAnimationFrame(() => {
-        const element = document.querySelector('.shepherd-element');
-        expect(element.classList.contains('test-1')).toBeTruthy();
-        expect(element.classList.contains('test-2')).toBeTruthy();
-        expect(element.classList.contains('classes-test')).toBeFalsy();
-        done();
+        requestAnimationFrame(() => {
+          const element = document.querySelector('.shepherd-element');
+          expect(element.classList.contains('test-1')).toBeTruthy();
+          expect(element.classList.contains('test-2')).toBeTruthy();
+          expect(element.classList.contains('classes-test')).toBeFalsy();
+          done();
+        });
       });
     });
 
-    it('updating classes should not overwrite tether classes', (done) => {
-      step.updateStepOptions({ classes: 'test-1 test-2' });
-      expect(step.options.classes).toEqual('test-1 test-2');
+    it('updating classes should not overwrite tether classes', () => {
+      return new Promise((done) => {
+        step.updateStepOptions({ classes: 'test-1 test-2' });
+        expect(step.options.classes).toEqual('test-1 test-2');
 
-      requestAnimationFrame(() => {
-        const element = document.querySelector('.shepherd-element');
-        expect(element.classList.contains('shepherd-element-attached-bottom')).toBeTruthy();
-        expect(element.classList.contains('shepherd-element-attached-center')).toBeTruthy();
-        expect(element.classList.contains('shepherd-target-attached-top')).toBeTruthy();
-        expect(element.classList.contains('shepherd-target-attached-center')).toBeTruthy();
-        done();
+        requestAnimationFrame(() => {
+          const element = document.querySelector('.shepherd-element');
+          expect(element.classList.contains('shepherd-element-attached-bottom')).toBeTruthy();
+          expect(element.classList.contains('shepherd-element-attached-center')).toBeTruthy();
+          expect(element.classList.contains('shepherd-target-attached-top')).toBeTruthy();
+          expect(element.classList.contains('shepherd-target-attached-center')).toBeTruthy();
+          done();
+        });
       });
     });
   });

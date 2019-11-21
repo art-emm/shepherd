@@ -2,18 +2,18 @@ import { isString } from './type-check';
 import Tether from 'tether';
 
 const ATTACHMENT = {
-  'bottom': 'top center',
+  bottom: 'top center',
   'bottom center': 'top center',
   'bottom left': 'top right',
   'bottom right': 'top left',
-  'center': 'middle center',
-  'left': 'middle right',
-  'middle': 'middle center',
+  center: 'middle center',
+  left: 'middle right',
+  middle: 'middle center',
   'middle center': 'middle center',
   'middle left': 'middle right',
   'middle right': 'middle left',
-  'right': 'middle left',
-  'top': 'bottom center',
+  right: 'middle left',
+  top: 'bottom center',
   'top center': 'bottom center',
   'top left': 'bottom right',
   'top right': 'bottom left'
@@ -43,6 +43,13 @@ export function parseAttachTo(step) {
   const options = step.options.attachTo || {};
   const returnOpts = Object.assign({}, options);
 
+  if (Array.isArray(options.element)) {
+    const elements = [];
+    options.element.forEach((element) => {
+      elements.push(document.querySelector(element));
+    });
+    returnOpts.element = elements;
+  }
   if (isString(options.element)) {
     // Can't override the element in user opts reference because we can't
     // guarantee that the element will exist in the future.
@@ -52,7 +59,9 @@ export function parseAttachTo(step) {
       // TODO
     }
     if (!returnOpts.element) {
-      console.error(`The element for this Shepherd step was not found ${options.element}`);
+      console.error(
+        `The element for this Shepherd step was not found ${options.element}`
+      );
     }
   }
 
@@ -85,7 +94,7 @@ export function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (d + Math.random() * 16) % 16 | 0;
     d = Math.floor(d / 16);
-    return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    return (c == 'x' ? r : (r & 0x3) | 0x8).toString(16);
   });
 }
 
@@ -113,11 +122,17 @@ export function getTetherOptions(attachToOptions, step) {
   };
   let target = document.body;
 
-  if (!attachToOptions.element || !attachToOptions.on) {
+  if (
+    !attachToOptions.element ||
+    (Array.isArray(attachToOptions.element) &&
+      attachToOptions.element.length > 1) ||
+    !attachToOptions.on
+  ) {
     tetherOptions.attachment = 'middle center';
     tetherOptions.targetModifier = 'visible';
   } else {
-    tetherOptions.attachment = ATTACHMENT[attachToOptions.on] || ATTACHMENT.right;
+    tetherOptions.attachment =
+      ATTACHMENT[attachToOptions.on] || ATTACHMENT.right;
     target = attachToOptions.element;
   }
 

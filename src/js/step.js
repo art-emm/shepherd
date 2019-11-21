@@ -2,7 +2,12 @@ import { Evented } from '../../node_modules/tether/src/js/evented.js';
 import autoBind from './utils/auto-bind.js';
 import { isElement, isFunction, isUndefined } from './utils/type-check.js';
 import { bindAdvance } from './utils/bind.js';
-import { setupTooltip, parseAttachTo, normalizePrefix, uuid } from './utils/general.js';
+import {
+  setupTooltip,
+  parseAttachTo,
+  normalizePrefix,
+  uuid
+} from './utils/general.js';
 import ShepherdElement from './components/shepherd-element.svelte';
 
 // Polyfills
@@ -104,7 +109,9 @@ export class Step extends Evented {
   constructor(tour, options = {}) {
     super(tour, options);
     this.tour = tour;
-    this.classPrefix = this.tour.options ? normalizePrefix(this.tour.options.classPrefix) : '';
+    this.classPrefix = this.tour.options
+      ? normalizePrefix(this.tour.options.classPrefix)
+      : '';
     this.styles = tour.styles;
 
     autoBind(this);
@@ -228,14 +235,13 @@ export class Step extends Evented {
 
     this.shepherdElementComponent = new ShepherdElement({
       target: document.body,
-      props:
-        {
-          classPrefix: this.classPrefix,
-          descriptionId,
-          labelId,
-          step: this,
-          styles: this.styles
-        }
+      props: {
+        classPrefix: this.classPrefix,
+        descriptionId,
+        labelId,
+        step: this,
+        styles: this.styles
+      }
     });
 
     return this.shepherdElementComponent.getElement();
@@ -254,7 +260,10 @@ export class Step extends Evented {
 
     if (isFunction(this.options.scrollToHandler)) {
       this.options.scrollToHandler(element);
-    } else if (isElement(element) && typeof element.scrollIntoView === 'function') {
+    } else if (
+      isElement(element) &&
+      typeof element.scrollIntoView === 'function'
+    ) {
       element.scrollIntoView(scrollToOptions);
     }
   }
@@ -351,7 +360,19 @@ export class Step extends Evented {
     this.tooltip.position();
 
     const target = this.target || document.body;
-    target.classList.add(`${this.classPrefix}shepherd-enabled`, `${this.classPrefix}shepherd-target`);
+    if (Array.isArray(target)) {
+      target.forEach((el) => {
+        el.classList.add(
+          `${this.classPrefix}shepherd-enabled`,
+          `${this.classPrefix}shepherd-target`
+        );
+      });
+    } else {
+      target.classList.add(
+        `${this.classPrefix}shepherd-enabled`,
+        `${this.classPrefix}shepherd-target`
+      );
+    }
 
     if (this.options.scrollTo) {
       setTimeout(() => {
@@ -371,19 +392,30 @@ export class Step extends Evented {
    * @private
    */
   _styleTargetElementForStep(step) {
-    const targetElement = step.target;
+    let targetElement = step.target;
 
     if (!targetElement) {
       return;
     }
 
-    if (step.options.highlightClass) {
-      targetElement.classList.add(step.options.highlightClass);
+    if (!Array.isArray(targetElement)) {
+      targetElement = [targetElement];
     }
 
-    if (step.options.canClickTarget === false) {
-      targetElement.classList.add('shepherd-target-click-disabled');
+    if (step.notCliCkable) {
+      step.notCliCkable.forEach((el) => {
+        el = document.querySelector(el);
+        el.classList.add('shepherd-target-click-disabled');
+      });
     }
+    targetElement.forEach((el) => {
+      if (step.options.canClickTarget === false) {
+        el.classList.add('shepherd-target-click-disabled');
+      }
+      if (step.options.highlightClass) {
+        el.classList.add(step.options.highlightClass);
+      }
+    });
   }
 
   /**
@@ -393,9 +425,27 @@ export class Step extends Evented {
    */
   _updateStepTargetOnHide() {
     if (this.options.highlightClass) {
-      this.target.classList.remove(this.options.highlightClass);
+      if (Array.isArray(this.target)) {
+        this.target.forEach((el) => {
+          el.classList.remove(this.options.highlightClass);
+        });
+      } else {
+        this.target.classList.remove(this.options.highlightClass);
+      }
     }
 
-    this.target.classList.remove(`${this.classPrefix}shepherd-enabled`, `${this.classPrefix}shepherd-target`);
+    if (Array.isArray(this.target)) {
+      this.target.forEach((el) => {
+        el.classList.remove(
+          `${this.classPrefix}shepherd-enabled`,
+          `${this.classPrefix}shepherd-target`
+        );
+      });
+    } else {
+      this.target.classList.remove(
+        `${this.classPrefix}shepherd-enabled`,
+        `${this.classPrefix}shepherd-target`
+      );
+    }
   }
 }

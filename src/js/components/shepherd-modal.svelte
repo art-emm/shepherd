@@ -1,7 +1,10 @@
 <script>
-  import { uuid } from '../utils/general.js';
+  import { uuid } from "../utils/general.js";
 
-  export let element, openingProperties;
+  export let element,
+    openingProperties,
+    svgPath = "",
+    defaultOverlay = `M 0 0 H ${window.innerWidth} V ${window.innerHeight} H 0 L 0 0 Z`;
   const guid = uuid();
   let modalIsVisible = false;
   let rafId = undefined;
@@ -35,19 +38,30 @@
    * @param {HTMLElement} scrollParent The scrollable parent of the target element
    * @param {Number} modalOverlayOpeningPadding An amount of padding to add around the modal overlay opening
    */
-  export function positionModalOpening(targetElement, scrollParent, modalOverlayOpeningPadding = 0) {
-    if (targetElement.getBoundingClientRect) {
-      const { y, height } = _getVisibleHeight(targetElement, scrollParent);
-      const { x, width, left } = targetElement.getBoundingClientRect();
+  export function positionModalOpening(
+    targetElement,
+    scrollParent,
+    modalOverlayOpeningPadding = 0
+  ) {
+    const openingPropertiesArray = [];
 
-      // getBoundingClientRect is not consistent. Some browsers use x and y, while others use left and top
-      openingProperties = {
-        x: (x || left) - modalOverlayOpeningPadding,
-        y: y - modalOverlayOpeningPadding,
-        width: (width + (modalOverlayOpeningPadding * 2)),
-        height: (height + (modalOverlayOpeningPadding * 2))
-      };
+    if (!Array.isArray(targetElement)) {
+      targetElement = [targetElement];
     }
+    svgPath = "";
+    targetElement.forEach(element => {
+      if (element.getBoundingClientRect) {
+        let { y, height } = _getVisibleHeight(element, scrollParent);
+        let { x, width, left } = element.getBoundingClientRect();
+        (x = (x || left) - modalOverlayOpeningPadding),
+          (y = y - modalOverlayOpeningPadding),
+          (width = width + modalOverlayOpeningPadding * 2),
+          (height = height + modalOverlayOpeningPadding * 2);
+        svgPath += `M ${x} ${y} H ${width + x} V ${height +
+          y} H ${x} L ${x} 0 Z `;
+      }
+    });
+    svgPath += defaultOverlay;
   }
 
   /**
@@ -73,11 +87,11 @@
     modalIsVisible = true;
   }
 
-  const _preventModalBodyTouch = (e) => {
+  const _preventModalBodyTouch = e => {
     e.preventDefault();
   };
 
-  const _preventModalOverlayTouch = (e) => {
+  const _preventModalOverlayTouch = e => {
     e.stopPropagation();
   };
 
@@ -87,7 +101,7 @@
    */
   function _addStepEventListeners() {
     // Prevents window from moving on touch.
-    window.addEventListener('touchmove', _preventModalBodyTouch, {
+    window.addEventListener("touchmove", _preventModalBodyTouch, {
       passive: false
     });
   }
@@ -102,7 +116,7 @@
       rafId = undefined;
     }
 
-    window.removeEventListener('touchmove', _preventModalBodyTouch, {
+    window.removeEventListener("touchmove", _preventModalBodyTouch, {
       passive: false
     });
   }
@@ -121,7 +135,11 @@
       // Setup recursive function to call requestAnimationFrame to update the modal opening position
       const rafLoop = () => {
         rafId = undefined;
-        positionModalOpening(step.target, scrollParent, modalOverlayOpeningPadding);
+        positionModalOpening(
+          step.target,
+          scrollParent,
+          modalOverlayOpeningPadding
+        );
         rafId = requestAnimationFrame(rafLoop);
       };
 
@@ -134,37 +152,37 @@
   }
 
   /**
-  * Find the closest scrollable parent element
-  * @param {HTMLElement} element The target element
-  * @returns {HTMLElement}
-  * @private
-  */
+   * Find the closest scrollable parent element
+   * @param {HTMLElement} element The target element
+   * @returns {HTMLElement}
+   * @private
+   */
   function _getScrollParent(element) {
     if (!element) {
       return null;
     }
 
     const isHtmlElement = element instanceof HTMLElement;
-    const overflowY = isHtmlElement && window.getComputedStyle(element).overflowY;
-    const isScrollable = overflowY !== 'hidden' && overflowY !== 'visible';
-
+    const overflowY =
+      isHtmlElement && window.getComputedStyle(element).overflowY;
+    const isScrollable = overflowY !== "hidden" && overflowY !== "visible";
 
     if (isScrollable && element.scrollHeight >= element.clientHeight) {
-       return element;
+      return element;
     }
 
     return _getScrollParent(element.parentElement);
   }
 
   /**
-  * Get the visible height of the target element relative to its scrollParent.
-  * If there is no scroll parent, the height of the element is returned.
-  *
-  * @param {HTMLElement} element The target element
-  * @param {HTMLElement} [scrollParent] The scrollable parent element
-  * @returns {{y: number, height: number}}
-  * @private
-  */
+   * Get the visible height of the target element relative to its scrollParent.
+   * If there is no scroll parent, the height of the element is returned.
+   *
+   * @param {HTMLElement} element The target element
+   * @param {HTMLElement} [scrollParent] The scrollable parent element
+   * @returns {{y: number, height: number}}
+   * @private
+   */
   function _getVisibleHeight(element, scrollParent) {
     const elementRect = element.getBoundingClientRect();
     let top = elementRect.y || elementRect.top;
@@ -181,7 +199,7 @@
 
     const height = Math.max(bottom - top, 0); // Default to 0 if height is negative
 
-    return {y: top, height};
+    return { y: top, height };
   }
 </script>
 
@@ -215,10 +233,8 @@
 
 <svg
   bind:this={element}
-  class="{`${(modalIsVisible ? 'shepherd-modal-is-visible' : '')} shepherd-modal-overlay-container`}"
-  on:touchmove={_preventModalOverlayTouch}
->
-  <path
-    d="{`M ${openingProperties.x} ${openingProperties.y} H ${openingProperties.width + openingProperties.x} V ${openingProperties.height + openingProperties.y} H ${openingProperties.x} L ${openingProperties.x} 0 Z M 0 0 H ${window.innerWidth} V ${window.innerHeight} H 0 L 0 0 Z`}">
-  </path>
+  class={`${modalIsVisible ? 'shepherd-modal-is-visible' : ''} shepherd-modal-overlay-container`}
+  on:touchmove={_preventModalOverlayTouch}>
+  <path d={`${svgPath || defaultOverlay}`} />
+
 </svg>
