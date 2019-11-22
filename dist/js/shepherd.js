@@ -5057,13 +5057,12 @@
       steps.forEach(function (step) {
         if (step.options && step.options.canClickTarget === false && step.options.attachTo) {
           if (step.target instanceof HTMLElement) {
-            step.target.classList.remove("shepherd-target-click-disabled");
+            step.target.classList.remove('shepherd-target-click-disabled');
           }
 
           if (Array.isArray(step.target)) {
             step.target.forEach(function (el) {
-              el = document.querySelector(el);
-              el.classList.remove("shepherd-target-click-disabled");
+              el.classList.remove('shepherd-target-click-disabled');
             });
           }
         }
@@ -5071,7 +5070,7 @@
         if (step.notCliCkable) {
           step.notCliCkable.forEach(function (el) {
             el = document.querySelector(el);
-            el.classList.remove("shepherd-target-click-disabled");
+            el.classList.remove('shepherd-target-click-disabled');
           });
         }
       });
