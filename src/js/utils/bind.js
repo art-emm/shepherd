@@ -1,4 +1,4 @@
-import { isUndefined } from './type-check';
+import { isUndefined } from "./type-check";
 
 /**
  * Sets up the handler to determine if we should advance the tour
@@ -15,7 +15,9 @@ function _setupAdvanceOnHandler(selector, step) {
         !isUndefined(selector) && event.currentTarget.matches(selector);
 
       if (targetIsSelector || targetIsEl) {
-        step.tour.next();
+        setTimeout(function () {
+          step.tour.next();
+        }, 500);
       }
     }
   };
@@ -35,7 +37,7 @@ export function bindAdvance(step) {
     let el;
     try {
       el = document.querySelector(selector);
-    } catch(e) {
+    } catch (e) {
       // TODO
     }
     if (!isUndefined(selector) && !el) {
@@ -44,18 +46,18 @@ export function bindAdvance(step) {
       );
     } else if (el) {
       el.addEventListener(event, handler);
-      step.on('destroy', () => {
+      step.on("destroy", () => {
         return el.removeEventListener(event, handler);
       });
     } else {
       document.body.addEventListener(event, handler, true);
-      step.on('destroy', () => {
+      step.on("destroy", () => {
         return document.body.removeEventListener(event, handler, true);
       });
     }
   } else {
     return console.error(
-      'advanceOn was defined, but no event name was passed.'
+      "advanceOn was defined, but no event name was passed."
     );
   }
 }

@@ -206,8 +206,9 @@ export class Step extends Evented {
       if (!isUndefined(beforeShowPromise)) {
         return beforeShowPromise.then(() => this._show());
       }
+    } else {
+      this._show();
     }
-    this._show();
   }
 
   /**
@@ -288,9 +289,7 @@ export class Step extends Evented {
     ];
     const uniqClasses = new Set(allClasses);
 
-    return Array.from(uniqClasses)
-      .join(' ')
-      .trim();
+    return Array.from(uniqClasses).join(' ').trim();
   }
 
   /**
