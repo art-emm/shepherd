@@ -292,7 +292,9 @@ function _setupAdvanceOnHandler(selector, step) {
       var targetIsSelector = !isUndefined$1(selector) && event.currentTarget.matches(selector);
 
       if (targetIsSelector || targetIsEl) {
-        step.tour.next();
+        setTimeout(function () {
+          step.tour.next();
+        }, 500);
       }
     }
   };
@@ -324,17 +326,17 @@ function bindAdvance(step) {
       return console.error("No element was found for the selector supplied to advanceOn: " + selector);
     } else if (el) {
       el.addEventListener(event, handler);
-      step.on('destroy', function () {
+      step.on("destroy", function () {
         return el.removeEventListener(event, handler);
       });
     } else {
       document.body.addEventListener(event, handler, true);
-      step.on('destroy', function () {
+      step.on("destroy", function () {
         return document.body.removeEventListener(event, handler, true);
       });
     }
   } else {
-    return console.error('advanceOn was defined, but no event name was passed.');
+    return console.error("advanceOn was defined, but no event name was passed.");
   }
 }
 
@@ -4806,9 +4808,9 @@ function (_Evented) {
           return _this2._show();
         });
       }
+    } else {
+      this._show();
     }
-
-    this._show();
   }
   /**
    * Updates the options of the step.
