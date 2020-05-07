@@ -300,7 +300,7 @@
         if (targetIsSelector || targetIsEl) {
           setTimeout(function () {
             step.tour.next();
-          }, 500);
+          }, 200);
         }
       }
     };
